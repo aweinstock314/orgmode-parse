@@ -48,6 +48,8 @@ module Data.OrgMode.Types
 , Content           (..)
 , MarkupText        (..)
 , Item              (..)
+, BlockType         (..)
+, GreaterBlockType  (..)
 , sectionDrawer
 ) where
 
@@ -155,6 +157,23 @@ instance FromJSON MarkupText
 newtype Item = Item [Content]
   deriving (Show, Eq, Semigroup, Monoid, ToJSON, FromJSON, Generic)
 
+data BlockType = Comment | Example | Export | Src
+    deriving (Show, Eq, Generic)
+
+instance ToJSON BlockType where
+  toEncoding = genericToEncoding defaultOptions
+
+instance FromJSON BlockType
+
+-- Verse is technically a BlockType, but the CONTENTS of a VERSE block can contain other org elements, so it acts like a GreaterBlockType
+data GreaterBlockType = Center | Quote | Verse | OtherGreaterBlockType Text
+    deriving (Show, Eq, Generic)
+
+instance ToJSON GreaterBlockType where
+  toEncoding = genericToEncoding defaultOptions
+
+instance FromJSON GreaterBlockType
+
 data Content
   =
     OrderedList   [Item]
@@ -163,7 +182,13 @@ data Content
   | Drawer
     { name     :: Text
     , contents :: Text
-    } deriving (Show, Eq, Generic)
+    }
+  | Block
+    { blockType :: BlockType
+    , blockData :: Maybe Text
+    , blockContents :: [Text]
+    }
+  deriving (Show, Eq, Generic)
 
 instance ToJSON Content where
   toEncoding = genericToEncoding defaultOptions

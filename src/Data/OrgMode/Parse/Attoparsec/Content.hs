@@ -20,6 +20,7 @@ import           Data.Attoparsec.Text                            (Parser,
                                                                   many')
 import           Data.Semigroup                                  ((<>))
 
+import           Data.OrgMode.Parse.Attoparsec.Content.Block     (parseBlock)
 import           Data.OrgMode.Parse.Attoparsec.Content.List      (parseList)
 import           Data.OrgMode.Parse.Attoparsec.Content.Paragraph (parseParagraph)
 import           Data.OrgMode.Parse.Attoparsec.Drawer            (parseDrawer)
@@ -28,11 +29,11 @@ import           Data.OrgMode.Parse.Attoparsec.Util              (parseLinesTill
 import           Data.OrgMode.Types                              (Content (..))
 
 
--- | Parse the content until reaching a drawer, a list, or a content end.  And include the parsed drawer.
+-- | Parse the content until reaching a drawer, a list, a block, or a content end.  And include the parsed drawer.
 parseContents :: Parser [Content]
 parseContents = concat <$> many' p
   where
     p :: Parser [Content]
     p = do
-      blocks <- parseLinesTill parseParagraph (eitherP takeContentBreak (parseDrawer <> parseList))
+      blocks <- parseLinesTill parseParagraph (eitherP takeContentBreak (parseDrawer <> parseList <> parseBlock))
       return $ filter (/= Paragraph []) blocks
