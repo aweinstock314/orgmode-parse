@@ -20,7 +20,7 @@ where
 
 import           Control.Monad                                   (guard)
 import           Data.Attoparsec.Text                            (Parser,
-                                                                  string,
+                                                                  asciiCI,
                                                                   choice,
                                                                   option,
                                                                   manyTill,
@@ -34,27 +34,27 @@ import           Data.OrgMode.Parse.Attoparsec.Util              (nonHeadline, s
 
 parseBlockType :: Parser BlockType
 parseBlockType = choice [
-    Comment <$ string "COMMENT",
-    Example <$ string "EXAMPLE",
-    Export <$ string "EXPORT",
-    Src <$ string "SRC"
+    Comment <$ asciiCI "COMMENT",
+    Example <$ asciiCI "EXAMPLE",
+    Export <$ asciiCI "EXPORT",
+    Src <$ asciiCI "SRC"
     ]
 
 parseGreaterBlockType :: Parser GreaterBlockType
 parseGreaterBlockType = choice [
-    Verse <$ string "VERSE",
-    Center <$ string "CENTER",
-    Quote <$ string "QUOTE",
+    Verse <$ asciiCI "VERSE",
+    Center <$ asciiCI "CENTER",
+    Quote <$ asciiCI "QUOTE",
     OtherGreaterBlockType <$> takeTill isHorizontalSpace
     ]
 
 parseBlock :: Parser Content
 parseBlock = do
-    string "#+BEGIN_"
+    asciiCI "#+BEGIN_"
     type1 <- parseBlockType
     skipOnlySpace
     data_ <- option Nothing (Just <$> takeTill isEndOfLine <* endOfLine)
-    contents_ <- manyTill nonHeadline (string "#+END_")
+    contents_ <- manyTill nonHeadline (asciiCI "#+END_")
     type2 <- parseBlockType
     guard (type1 == type2) -- TODO: should this be lenient?
     pure $ Block type1 data_ contents_
