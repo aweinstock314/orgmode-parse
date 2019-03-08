@@ -31,10 +31,10 @@ parserParagraphs = testGroup "Attoparsec orgmode Paragraph"
       testDocS " te*xt "   (pack " te*xt"),
     testCase "Parses Nested Markup" $
       testDocS "_* text *_"  $ mark (UnderLine . (:[]) . Bold) (pack "text"),
-    testCase "Paragraph Parser shall not try to parse markup across lines" $
-      testDocS "_* l1p1 \nl2p2 *_"  $ mark (UnderLine . (:[]) . Bold) (pack "l1p1 l2p2"),
+    testCase "Paragraph Parser shall parse markup across lines" $
+      testDocS "_* l1p1 \nl2p2 *_"  $ mark (UnderLine . (:[]) . Bold) (pack "l1p1\nl2p2"),
     testCase "Paragraph Parser shall ignore the space before line end (in plain)" $
-      testDocS " l1p1 \nl2p2 "  (pack " l1p1 l2p2"),
+      testDocS " l1p1 \nl2p2 "  (pack " l1p1\nl2p2"),
     testCase "Paragraph Parser shall ignore the markup inside verbatim" $
       testDocS "= *l1p1 l2p2* ="  $ Paragraph [Verbatim  " *l1p1 l2p2* "]
   ]

@@ -17,7 +17,7 @@ parserLists = testGroup "Attoparsec orgmode Paragraph"
   [ testCase "Parses a Simple Item" $
       testDocS ["  * text "]  $ toL UnorderedList (pack "text"),
     testCase "Parses a items with line break" $
-      testDocS ["  * item1 ", "       poi"]  $ toL UnorderedList (pack "item1 poi"),
+      testDocS ["  * item1 ", "       poi"]  $ toL UnorderedList (pack "item1\npoi"),
     testCase "Parses multi items" $
       testDocS ["  * item1 ", "  * item2 "]  $ UnorderedList $ map toI [pack "item1", pack "item2"],
     testCase "Parses multi items with child list" $

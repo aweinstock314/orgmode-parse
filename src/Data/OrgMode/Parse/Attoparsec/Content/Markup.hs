@@ -123,11 +123,11 @@ parsePlainText = do
   content <- adaptSpace . cons c <$> takeWhile isNotToken
   return $ Plain content
 
--- | Take the line break as common space.
+-- | Remove spaces around linebreaks.
 --
 -- 1. spaces before "\n" shall be omitted
 -- 2. spaces after "\n" shall be omitted
--- 3. "\n" shall be considered as simple " "
+-- 3. "\n" shall be left intact
 adaptSpace :: Text -> Text
 adaptSpace str = fix content
   where
@@ -136,7 +136,7 @@ adaptSpace str = fix content
         [] -> []
         (firstLine : restLines) -> dropWhileEnd isSpace firstLine : map strip restLines
 
-    content = intercalate (Text.pack " ") textLines
+    content = intercalate (Text.pack "\n") textLines
 
     fix s | isSpace (Text.last str) = snoc s ' '
           | otherwise               = s
